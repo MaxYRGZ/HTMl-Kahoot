@@ -1,0 +1,141 @@
+/* Estilo general para todo el cuerpo de la página */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Estilo del contenedor principal del cuestionario */
+.quiz-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* Estilo para el título principal */
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+/* Estilo para el contenedor de botones de opciones */
+.btn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Estilo de los botones de opciones */
+.btn {
+    background-color: #2196F3;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover para los botones */
+.btn:hover {
+    background-color: #0b7dda;
+    transform: translateY(-2px);
+}
+
+/* Estilo cuando una respuesta es correcta */
+.correct {
+    background-color: #4CAF50 !important;
+}
+
+/* Estilo cuando una respuesta es incorrecta */
+.wrong {
+    background-color: #f44336 !important;
+}
+
+/* Estilo del temporizador */
+#timer {
+    margin: 15px 0;
+    font-size: 18px;
+    color: #555;
+}
+
+/* Estilo del puntaje final */
+#score {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #555;
+}
+
+/* Ocultar elementos */
+.hidden {
+    display: none;
+}
+
+/* Estilo del formulario de inicio y pantalla de fin */
+#start-screen, #end-screen {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Estilo de los botones de respuesta */
+#answer-buttons .btn {
+    margin: 10px;
+    padding: 10px 15px;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* Estilo de las tablas de puntajes */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Estilo para los encabezados de las tablas */
+th {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* Estilo para las filas impares en la tabla */
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Estilo para las filas pares en la tabla */
+tbody tr:nth-child(even) {
+    background-color: #fff;
+}
+
+/* Estilo para el mensaje de fin */
+#player-name {
+    font-weight: bold;
+    color: #333;
+}
