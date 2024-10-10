@@ -259,58 +259,53 @@ function selectAnswer(e) {
 
 // Establecer clases para marcar correcto o incorrecto
 function setStatusClass(element, correct) {
-    clearStatusClass(element);
-    if (correct) {
-        element.classList.add('correct');
-    } else {
-        element.classList.add('incorrect');
-    }
+    element.classList.add(correct ? 'correct' : 'wrong');
 }
 
-// Limpiar clases
-function clearStatusClass(element) {
-    element.classList.remove('correct');
-    element.classList.remove('incorrect');
-}
-
-// Cuando se hace clic en "Siguiente"
+// Función para avanzar a la siguiente pregunta
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++;
     if (currentQuestionIndex < shuffledQuestions.length) {
         setNextQuestion();
     } else {
-        endQuiz();
+        showScore();
     }
 });
 
-// Función para finalizar el cuestionario
-function endQuiz() {
+// Mostrar el puntaje final
+function showScore() {
     quizContainer.style.display = 'none';
     endScreen.style.display = 'block';
-    playerNameElement.textContent = playerName;
-    finalScoreElement.textContent = score;
-
-    // Guardar el puntaje del jugador actual
-    leaderboard.push({ name: playerName, score: score });
-    leaderboard.sort((a, b) => b.score - a.score); // Ordenar por puntaje
-    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-
-    // Mostrar la tabla de líderes
-    displayLeaderboard();
+    finalScoreElement.innerText = `Tu puntaje es: ${score} de ${shuffledQuestions.length}`;
+    saveScore();
+    updateLeaderboard();
 }
 
-// Función para mostrar el leaderboard
-function displayLeaderboard() {
+// Guardar puntaje en el localStorage
+function saveScore() {
+    const scoreEntry = { name: playerName, score: score };
+    leaderboard.push(scoreEntry);
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+}
+
+// Actualizar y mostrar el leaderboard
+function updateLeaderboard() {
+    leaderboard.sort((a, b) => b.score - a.score);
     leaderboardBody.innerHTML = '';
-    leaderboard.forEach(player => {
+    leaderboard.forEach(entry => {
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
         const scoreCell = document.createElement('td');
-        nameCell.textContent = player.name;
-        scoreCell.textContent = player.score;
+        nameCell.innerText = entry.name;
+        scoreCell.innerText = entry.score;
         row.appendChild(nameCell);
         row.appendChild(scoreCell);
         leaderboardBody.appendChild(row);
     });
 }
 
+document.getElementById('restart-btn').addEventListener('click', () => {
+    endScreen.style.display = 'none';
+    startScreen.style.display = 'block';
+    leaderboard.length = 0; // Limpia el leaderboard si deseas reiniciarlo
+});
