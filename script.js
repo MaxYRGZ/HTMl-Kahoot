@@ -185,7 +185,7 @@ let playerName = "";
 let score = 0;
 let currentQuestionIndex = 0;
 let shuffledQuestions = [];
-const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+const leaderboard = [];
 
 // Obtiene elementos del DOM
 const startScreen = document.getElementById('start-screen');
@@ -197,6 +197,19 @@ const nextButton = document.getElementById('next-btn');
 const finalScoreElement = document.getElementById('final-score');
 const leaderboardBody = document.getElementById('leaderboard-body');
 const playerNameElement = document.getElementById('player-name');
+
+// Configuración de Firebase (asegúrate de incluir tu configuración)
+const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_AUTH_DOMAIN",
+    projectId: "TU_PROJECT_ID",
+    storageBucket: "TU_STORAGE_BUCKET",
+    messagingSenderId: "TU_MESSAGING_SENDER_ID",
+    appId: "TU_APP_ID"
+};
+// Inicializa Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // Formulario para ingresar el nombre
 const nameForm = document.getElementById('name-form');
@@ -246,18 +259,20 @@ function resetState() {
     }
 }
 
-// Función cuando se selecciona una respuesta
+// Función para manejar la selección de respuesta
 function selectAnswer(e) {
     const selectedButton = e.target;
-    const correct = selectedButton.dataset.correct === 'true';
-    if (correct) score++;
+    const correct = selectedButton.dataset.correct;
+    if (correct) {
+        score++;
+    }
     Array.from(answerButtonsElement.children).forEach(button => {
-        setStatusClass(button, button.dataset.correct === 'true');
+        setStatusClass(button, button.dataset.correct);
     });
     nextButton.classList.remove('hide');
 }
 
-// Establecer clases para marcar correcto o incorrecto
+// Función para establecer el estado de la respuesta
 function setStatusClass(element, correct) {
     element.classList.add(correct ? 'correct' : 'wrong');
 }
@@ -272,40 +287,52 @@ nextButton.addEventListener('click', () => {
     }
 });
 
-// Mostrar el puntaje final
+// Función para mostrar la puntuación final
 function showScore() {
     quizContainer.style.display = 'none';
     endScreen.style.display = 'block';
-    finalScoreElement.innerText = `Tu puntaje es: ${score} de ${shuffledQuestions.length}`;
-    saveScore();
-    updateLeaderboard();
+    finalScoreElement.innerText = `Tu puntuación: ${score} de ${shuffledQuestions.length}`;
+    saveScore(); // Guarda el puntaje en Firebase
+    updateLeaderboard(); // Muestra el leaderboard
 }
 
-// Guardar puntaje en el localStorage
+// Función para guardar el puntaje en Firestore
 function saveScore() {
     const scoreEntry = { name: playerName, score: score };
-    leaderboard.push(scoreEntry);
-    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    db.collection('scores').add(scoreEntry)
+        .then(() => {
+            console.log('Puntaje guardado');
+        })
+        .catch((error) => {
+            console.error('Error al guardar el puntaje:', error);
+        });
 }
 
-// Actualizar y mostrar el leaderboard
+// Función para actualizar el leaderboard
 function updateLeaderboard() {
-    leaderboard.sort((a, b) => b.score - a.score);
-    leaderboardBody.innerHTML = '';
-    leaderboard.forEach(entry => {
-        const row = document.createElement('tr');
-        const nameCell = document.createElement('td');
-        const scoreCell = document.createElement('td');
-        nameCell.innerText = entry.name;
-        scoreCell.innerText = entry.score;
-        row.appendChild(nameCell);
-        row.appendChild(scoreCell);
-        leaderboardBody.appendChild(row);
-    });
+    db.collection('scores').orderBy('score', 'desc').get()
+        .then((querySnapshot) => {
+            leaderboardBody.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const entry = doc.data();
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const scoreCell = document.createElement('td');
+                nameCell.innerText = entry.name;
+                scoreCell.innerText = entry.score;
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                leaderboardBody.appendChild(row);
+            });
+        })
+        .catch((error) => {
+            console.error('Error al obtener el leaderboard:', error);
+        });
 }
 
-document.getElementById('restart-btn').addEventListener('click', () => {
+// Para reiniciar el quiz
+const restartButton = document.getElementById('restart-btn');
+restartButton.addEventListener('click', () => {
     endScreen.style.display = 'none';
     startScreen.style.display = 'block';
-    leaderboard.length = 0; // Limpia el leaderboard si deseas reiniciarlo
 });
